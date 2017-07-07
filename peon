@@ -1,6 +1,26 @@
 #!/usr/bin/env bash
 set -o errexit
 
+if [ ! -f ".peon" ]; then
+  cat <<EOF
+
+$(tinge red "No peon configuration found!")
+
+Peon needs to know a little more about your project before you can put it to
+work!
+
+1. Create a \`.peon\` file where you want to run peon
+2. Add the line \`SCRIPTS_DIR=<path to your scripts directory>\`
+3. Run \`peon --commands\` to verify
+
+Profit! :)
+
+EOF
+  exit 1
+fi
+
+. .peon
+
 list=1
 
 while [ ! $# -eq 0 ]
