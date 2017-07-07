@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -o errexit
+
+list=1
+
+while [ ! $# -eq 0 ]
+do
+  case "$1" in
+    --help | -h)
+      cat <<EOF
+
+  peon does things for you!
+
+  Usage: peon <command>
+
+    -c, --commands       see what peon can do for you
+    -h, --help           show this menu
+
+EOF
+      exit 0
+      ;;
+    --commands | -c)
+      list=0
+      ;;
+    *)
+      command="$1"
+      break
+      ;;
+  esac
+  shift
+done
+
+commands=""
+
+while read -r -d '' file; do
+  label=$(cat ${file} | \
+    grep "peon:label" | \
+    gawk 'match($0, /=>(.+)$/, a) {print a[1]}' | \
+    sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  desc=$(cat ${file} | \
+    grep "peon:desc" | \
+    gawk 'match($0, /=>(.+)$/, a) {print a[1]}' | \
+    sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+  if [ -z "$label" ]; then
+    continue
+  fi
+
+  commands="$commands\n$label@$desc@$file"
+done < <(find $SCRIPTS_DIR -type f -name "*.bash" -print0)
+
+matching_command=$(echo -e "$commands" | awk -F@ "\$1==\"$command\" {print \$3}")
+
+if [ ! -z "$matching_command" ]; then
+  exec "$matching_command" "$@"
+fi
+
+if [ $list = 0 ]; then
+  cat <<EOF
+
+Available commands are:
+EOF
+
+  echo -e "$commands" | awk -F@ '{printf("  %-20s %s\n", $1, $2)}'
+  echo ""
+  exit 0
+fi
+
+if [ -z $1 ]; then
+  echo $(tinge red "No command (or invalid option) specified!")
+else
+  echo "$1 → $(tinge red "Unknown command")"
+fi
+
+exit 1
