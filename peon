@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -o errexit
 
+if ! command -v gawk > /dev/null 2>&1; then
+  cat <<EOF
+$(tinge red "gawk not found!")
+Peon needs \`gawk\` in order to do work!
+EOF
+  exit 1
+fi
+
 if [ ! -f ".peon" ]; then
   cat <<EOF
 
