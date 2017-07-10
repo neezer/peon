@@ -90,10 +90,10 @@ while read -r -d '' file; do
     continue
   fi
 
-  commands="$commands\n$label@$desc@$file"
+  commands="$commands\n$label\0$desc\0$file"
 done < <(find $SCRIPTS_DIR -type f -name "*.bash" -print0)
 
-matching_command=$(echo -e "$commands" | awk -F@ "\$1==\"$command\" {print \$3}")
+matching_command=$(echo -e "$commands" | gawk -F "\0" "\$1==\"$command\" {print \$3}")
 
 if [ ! -z "$matching_command" ]; then
   exec "$matching_command" "$@"
@@ -105,15 +105,15 @@ if [ $list = 0 ]; then
 Available commands are:
 EOF
 
-  echo -e "$commands" | awk -F@ '{printf("  %-20s %s\n", $1, $2)}'
+  echo -e "$commands" | gawk -F "\0" '{printf("  %-20s %s\n", $1, $2)}'
   echo ""
   exit 0
 fi
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
   echo $(tinge red "No command (or invalid option) specified!")
 else
-  echo "$1 → $(tinge red "Unknown command")"
+  echo "$1 → $(tinge red "Unknown command!")"
 fi
 
 exit 1
