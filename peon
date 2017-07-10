@@ -1,6 +1,38 @@
 #!/usr/bin/env bash
 set -o errexit
 
+while [ ! $# -eq 0 ]
+do
+  case "$1" in
+    --help | -h)
+      cat <<EOF
+
+  peon does things for you!
+
+  Usage: peon <command>
+
+    -c, --commands       see what peon can do for you
+    -h, --help           show this menu
+    -v, --version        show the version of peon
+
+EOF
+      exit 0
+      ;;
+    --commands | -c)
+      list=0
+      ;;
+    --version | -v)
+      echo -e "peon v0.1.1"
+      exit 0
+      ;;
+    *)
+      command="$1"
+      break
+      ;;
+  esac
+  shift
+done
+
 if ! command -v gawk > /dev/null 2>&1; then
   cat <<EOF
 $(tinge red "gawk not found!")
@@ -46,33 +78,6 @@ EOF
 fi
 
 list=1
-
-while [ ! $# -eq 0 ]
-do
-  case "$1" in
-    --help | -h)
-      cat <<EOF
-
-  peon does things for you!
-
-  Usage: peon <command>
-
-    -c, --commands       see what peon can do for you
-    -h, --help           show this menu
-
-EOF
-      exit 0
-      ;;
-    --commands | -c)
-      list=0
-      ;;
-    *)
-      command="$1"
-      break
-      ;;
-  esac
-  shift
-done
 
 commands=""
 
