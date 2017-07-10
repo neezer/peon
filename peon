@@ -29,6 +29,14 @@ fi
 
 . .peon
 
+if [ -z "$SCRIPTS_DIR" ]; then
+  cat <<EOF
+$(tinge red "\$SCRIPTS_DIR is empty!")
+Peon needs to know where to find tasks!
+EOF
+  exit 1
+fi
+
 if [ ! -d "$SCRIPTS_DIR" ]; then
   cat <<EOF
 $(tinge red "\$SCRIPTS_DIR is not a directory!")
