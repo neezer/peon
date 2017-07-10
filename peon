@@ -106,7 +106,7 @@ if [ $list = 0 ]; then
 Available commands are:
 EOF
 
-  echo -e "$commands" | gawk -F "\0" '{printf("  %-20s %s\n", $1, $2)}'
+  echo -e "$commands" | sort | gawk -F "\0" '{printf("  %-20s %s\n", $1, $2)}'
   echo ""
   exit 0
 fi
