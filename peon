@@ -21,6 +21,14 @@ fi
 
 . .peon
 
+if [ ! -d "$SCRIPTS_DIR" ]; then
+  cat <<EOF
+$(tinge red "\$SCRIPTS_DIR is not a directory!")
+Peon expects \$SCRIPTS_DIR to be a directory containing bash scripts!
+EOF
+  exit 1
+fi
+
 list=1
 
 while [ ! $# -eq 0 ]
