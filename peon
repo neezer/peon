@@ -96,6 +96,7 @@ done < <(find $SCRIPTS_DIR -type f -name "*.bash" -print0)
 matching_command=$(echo -e "$commands" | gawk -F "\0" "\$1==\"$command\" {print \$3}")
 
 if [ ! -z "$matching_command" ]; then
+  shift
   exec "$matching_command" "$@"
 fi
 
