@@ -1,8 +1,8 @@
-![peon](https://user-images.githubusercontent.com/29997/28050411-5b3d7910-65b2-11e7-8539-5f80e6e980ad.png)
+![peon](https://user-images.githubusercontent.com/29997/28050892-6dbccfb6-65b5-11e7-820f-e50e1a8a734e.png)
 
 # peon
 
-`peon` is a bash script runner. It is inspired by the likes of [rake]() and [thor](), but is written in pure bash. The point of `peon` is to be fast and simple. `peon`'s feature set is intentionally very limited.
+`peon` is a bash script runner. It is inspired by the likes of [rake](https://ruby.github.io/rake/) and [thor](http://whatisthor.com/), but is written in pure bash. The point of `peon` is to be fast and simple. `peon`'s feature set is intentionally very limited.
 
 ## Install
 
@@ -19,7 +19,7 @@ brew install peon
 
 Just download the [latest release](https://github.com/neezer/peon/releases) and extract to a folder in your run path.
 
-You will need to have `gawk` installed.
+You will need to have [`gawk`](https://www.gnu.org/software/gawk/) installed. And also [`tinge`](https://github.com/neezer/tinge).
 
 ## Use
 
@@ -74,7 +74,7 @@ You can further configure `peon` by adding some additional variables to your loc
 ```bash
 # will automatically source a local .env file,
 # if one exists, before each command
-AUTOLOAD_ENV=true
+AUTOLOAD_ENV_FILE=true
 ```
 
 ## Contributing
