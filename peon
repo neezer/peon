@@ -50,7 +50,7 @@ Peon needs to know a little more about your project
 before you can put it to work!
 
 1. Create a \`.peon\` file where you want to run peon
-2. Add the line \`SCRIPTS_DIR="path/to/your/scripts/directory"\`
+2. Add the line \`TASKS_IN="path/to/your/scripts/directory"\`
 3. Run \`peon --commands\` to verify
 
 Profit! :)
@@ -61,18 +61,18 @@ fi
 
 . .peon
 
-if [ -z "$SCRIPTS_DIR" ]; then
+if [ -z "$TASKS_IN" ]; then
   cat <<EOF
-$(tinge red "\$SCRIPTS_DIR is empty!")
+$(tinge red "\$TASKS_IN is empty!")
 Peon needs to know where to find tasks!
 EOF
   exit 1
 fi
 
-if [ ! -d "$SCRIPTS_DIR" ]; then
+if [ ! -d "$TASKS_IN" ]; then
   cat <<EOF
-$(tinge red "\$SCRIPTS_DIR is not a directory!")
-Peon expects \$SCRIPTS_DIR to be a directory containing bash scripts!
+$(tinge red "\$TASKS_IN is not a directory!")
+Peon expects \$TASKS_IN to be a directory containing bash scripts!
 EOF
   exit 1
 fi
@@ -96,7 +96,7 @@ while read -r -d '' file; do
   fi
 
   commands="$commands\n$label\0$desc\0$file"
-done < <(find $SCRIPTS_DIR -type f -name "*.bash" -print0)
+done < <(find $TASKS_IN -type f -name "*.bash" -print0)
 
 matching_command=$(echo -e "$commands" | gawk -F "\0" "\$1==\"$command\" {print \$3}")
 
