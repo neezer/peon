@@ -1,4 +1,4 @@
-![peon](https://user-images.githubusercontent.com/29997/28050411-5b3d7910-65b2-11e7-8539-5f80e6e980ad.png)
+![peon](https://user-images.githubusercontent.com/29997/28050892-6dbccfb6-65b5-11e7-820f-e50e1a8a734e.png)
 
 # peon
 
