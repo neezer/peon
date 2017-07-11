@@ -74,7 +74,7 @@ You can further configure `peon` by adding some additional variables to your loc
 ```bash
 # will automatically source a local .env file,
 # if one exists, before each command
-AUTOLOAD_ENV=true
+AUTOLOAD_ENV_FILE=true
 ```
 
 ## Contributing
