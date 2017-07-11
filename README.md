@@ -2,7 +2,7 @@
 
 # peon
 
-`peon` is a bash script runner. It is inspired by the likes of [rake]() and [thor](), but is written in pure bash. The point of `peon` is to be fast and simple. `peon`'s feature set is intentionally very limited.
+`peon` is a bash script runner. It is inspired by the likes of [rake](https://ruby.github.io/rake/) and [thor](http://whatisthor.com/), but is written in pure bash. The point of `peon` is to be fast and simple. `peon`'s feature set is intentionally very limited.
 
 ## Install
 
