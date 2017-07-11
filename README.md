@@ -19,7 +19,7 @@ brew install peon
 
 Just download the [latest release](https://github.com/neezer/peon/releases) and extract to a folder in your run path.
 
-You will need to have `gawk` installed.
+You will need to have [`gawk`](https://www.gnu.org/software/gawk/) installed.
 
 ## Use
 
