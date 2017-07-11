@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -o errexit
 
+list=1
+
 while [ ! $# -eq 0 ]
 do
   case "$1" in
@@ -77,8 +79,6 @@ EOF
   exit 1
 fi
 
-list=1
-
 commands=""
 
 while read -r -d '' file; do
@@ -105,12 +105,17 @@ if [ ! -z "$matching_command" ]; then
   if [ "$AUTOLOAD_ENV_FILE" = "true" ]; then
     if [ ! -f .env ]; then
       cat <<EOF
-$(tinge red ".env is not a file!")
-You've configured peon to autoload env variables from \`.env\`, but it appears
-that \`.env\` is not a file. Perhaps you forgot to create it from
-\`.env.example?\`
++----------------------------------------------------------------------+
+| $(tinge yellow ".env is not a file!")                                                  |
+| You've configured peon to autoload env variables from \`.env\`, but it |
+| appears that \`.env\` is not a file. Perhaps you forgot to create it   |
+| from  \`.env.example?\`?                                               |
++----------------------------------------------------------------------+
+
+Continuing ...
+
 EOF
-      exit 1
+      exec "$matching_command" "$@"
     else
       exec env $(cat .env | grep -v "#" | xargs) "$matching_command" "$@"
     fi
