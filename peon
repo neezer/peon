@@ -24,7 +24,7 @@ EOF
       list=0
       ;;
     --version | -v)
-      echo -e "peon v0.1.1"
+      echo -e "peon v0.1.3"
       exit 0
       ;;
     *)
