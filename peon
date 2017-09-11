@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
 
 list=1
 
@@ -35,86 +34,89 @@ EOF
   shift
 done
 
-if ! command -v gawk > /dev/null 2>&1; then
-  cat <<EOF
-$(tinge red "gawk not found!")
-Peon needs \`gawk\` in order to do work!
-EOF
+peon_print() {
+  if [ $use_tinge = "y" ]; then
+    tinge "$1" "$2"
+  else
+    printf "$2"
+  fi
+}
+
+which tinge >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  use_tinge=y
+else
+  use_tinge=n
+fi
+
+which awk >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  peon_print red "awk not found!"
+  echo
+  echo "Peon needs \`awk\` to do work!"
   exit 1
 fi
 
 if [ ! -f ".peon" ]; then
-  cat <<EOF
-
-$(tinge red "No peon configuration found!")
-
-Peon needs to know a little more about your project
-before you can put it to work!
-
-1. Create a \`.peon\` file where you want to run peon
-2. Add the line \`TASKS_IN="path/to/your/scripts/directory"\`
-3. Run \`peon --commands\` to verify
-
-Profit! :)
-
-EOF
+  peon_print red "No peon configuration found!"
+  echo
+  echo "Peon needs to know a little more about your project"
+  echo "before you can put it to work!"
+  echo
+  echo "1. Create a \`.peon\` file where you want to run peon"
+  echo "2. Add the line \`TASKS_IN=\"path/to/your/scripts/directory\"\`"
+  echo "3. Run \`peon --commands\` to verify"
+  echo
+  echo "Profit! :)"
   exit 1
 fi
 
 . .peon
 
 if [ -z "$TASKS_IN" ]; then
-  cat <<EOF
-$(tinge red "\$TASKS_IN is empty!")
-Peon needs to know where to find tasks!
-EOF
+  peon_print red "\$TASKS_IN is empty!"
+  echo
+  echo "Peon needs to know where to find tasks!"
   exit 1
 fi
 
 if [ ! -d "$TASKS_IN" ]; then
-  cat <<EOF
-$(tinge red "\$TASKS_IN is not a directory!")
-Peon expects \$TASKS_IN to be a directory containing bash scripts!
-EOF
+  peon_print red "\$TASKS_IN is not a directory!"
+  echo
+  echo "Peon expects \$TASKS_IN to be a directory containing bash scripts!"
   exit 1
 fi
 
 commands=""
 
 while read -r -d '' file; do
-  label=$(cat ${file} | \
-    grep "peon:label" | \
-    gawk 'match($0, /=>(.+)$/, a) {print a[1]}' | \
-    sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-  desc=$(cat ${file} | \
-    grep "peon:desc" | \
-    gawk 'match($0, /=>(.+)$/, a) {print a[1]}' | \
-    sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  label=$(awk '/peon:label/ {print $2}' FS="=>" $file | awk '{$1=$1};1')
+  desc=$(awk '/peon:desc/ {print $2}' FS="=>" $file | awk '{$1=$1};1')
 
   if [ -z "$label" ]; then
     continue
   fi
 
-  commands="$commands\n$label\0$desc\0$file"
+  commands="$commands\n${label}SsS${desc}SsS${file}"
 done < <(find $TASKS_IN -type f -name "*.bash" -print0)
 
-matching_command=$(echo -e "$commands" | gawk -F "\0" "\$1==\"$command\" {print \$3}")
+matching_command=$(echo -e "$commands" | awk -F "SsS" "\$1==\"$command\" {print \$3}")
 
 if [ ! -z "$matching_command" ]; then
   shift
   if [ "$AUTOLOAD_ENV_FILE" = "true" ]; then
     if [ ! -f .env ]; then
-      cat <<EOF
-+----------------------------------------------------------------------+
-| $(tinge yellow ".env is not a file!")                                                  |
-| You've configured peon to autoload env variables from \`.env\`, but it |
-| appears that \`.env\` is not a file. Perhaps you forgot to create it   |
-| from  \`.env.example?\`?                                               |
-+----------------------------------------------------------------------+
+echo    "+----------------------------------------------------------------------+"
+echo -n "| "
+peon_print yellow ".env is not a file!"
+echo    "                                                  |"
+echo    "| You've configured peon to autoload env variables from \`.env\`, but it |"
+echo    "| appears that \`.env\` is not a file. Perhaps you forgot to create it   |"
+echo    "| from  \`.env.example?\`?                                               |"
+echo    "+----------------------------------------------------------------------+"
+echo
+echo    "Continuing ..."
 
-Continuing ...
-
-EOF
       exec "$matching_command" "$@"
     else
       exec env $(cat .env | grep -v "#" | xargs) "$matching_command" "$@"
@@ -130,15 +132,18 @@ if [ $list = 0 ]; then
 Available commands are:
 EOF
 
-  echo -e "$commands" | sort | gawk -F "\0" '{printf("  %-20s %s\n", $1, $2)}'
-  echo ""
+  echo -e "$commands" | sort | awk -F "SsS" '{printf("  %-20s %s\n", $1, $2)}'
+  echo
   exit 0
 fi
 
 if [ -z "$1" ]; then
-  echo $(tinge red "No command (or invalid option) specified!")
+  peon_print red "No command (or invalid option) specified!"
+  echo
 else
-  echo "$1 → $(tinge red "Unknown command!")"
+  echo -n "$1 → "
+  peon_print red "Unknown command!"
+  echo
 fi
 
 exit 1
